@@ -1,0 +1,7 @@
+# /etc/cron.d/magaop: crontab setting for megaop.
+
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+
+* * * * *   root	/etc/megaop/megaop.sh >> /etc/megaop/mega.log
