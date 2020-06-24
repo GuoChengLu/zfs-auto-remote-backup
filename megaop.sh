@@ -1,29 +1,29 @@
 #!/bin/bash
 
-backup_path="rpool/USERDATA/guocheng_5ekcd9"
+backup_path="mypool"
 
 snapshot_name=MEGA_OVER_POWER_$(date "+%Y-%m-%d-%H-%M-%S")
 
-ssh_user="root"
+ssh_user="fstuba"
 
-ssh_server="10.74.20.20"
+ssh_server="192.168.56.104"
 
-backup_pool="mypool/backup2"
+backup_pool="backuppool/backup"
 
 
-#if [ -f "/etc/megaop/presnapname" ]; then
+if [ -f "/etc/megaop/presnapname" ]; then
     pre_snapshot_name=$(cat /etc/megaop/presnapname)
     echo ${snapshot_name} > /etc/megaop/presnapname
 
     zfs snapshot -r ${backup_path}@${snapshot_name}
-    zfs send -v -i ${backup_path}@${pre_snapshot_name} ${backup_path}@${snapshot_name} |  ssh  -i /root/.ssh/id_rsa ${ssh_user}@${ssh_server} zfs recv -Fduv ${backup_pool} >> megaop.log
+    zfs send -v -i ${backup_path}@${pre_snapshot_name} ${backup_path}@${snapshot_name} | ssh ${ssh_user}@${ssh_server} zfs recv -Fduv ${backup_pool} >> megaop.log
 
-#else
-#    touch /etc/megaop/presnapname
-#
-#   zfs snapshot -r ${backup_path}@${snapshot_name}
-#    zfs send -v ${backup_path}@${snapshot_name} | \
-#    ssh ${ssh_user}@${ssh_server} zfs recv -F ${backup_pool}
+else
+    touch /etc/megaop/presnapname
 
-#    echo ${snapshot_name} > /etc/megaop/presnapname
-#fi
+   zfs snapshot -r ${backup_path}@${snapshot_name}
+    zfs send -v ${backup_path}@${snapshot_name} | \
+    ssh ${ssh_user}@${ssh_server} zfs recv -F ${backup_pool}
+
+    echo ${snapshot_name} > /etc/megaop/presnapname
+fi
